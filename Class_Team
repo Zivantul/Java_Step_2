@@ -1,0 +1,44 @@
+public class Team {
+    public String teamName;
+    public Participants participant_1_Name;
+    public Participants participant_2_Name;
+    public Participants participant_3_Name;
+    public Participants participant_4_Name;
+
+
+    public Team(String teamName, Participants participant_1_Name, Participants participant_2_Name, Participants participant_3_Name, Participants participant_4_Name) {
+        this.teamName = teamName;
+        this.participant_1_Name = participant_1_Name;
+        this.participant_2_Name = participant_2_Name;
+        this.participant_3_Name = participant_3_Name;
+        this.participant_4_Name = participant_4_Name;
+    }
+
+
+
+    public String toStringAllTeam() {
+        return "teamName='" + teamName + ": " + '\n' +
+                "participant_1: " + participant_1_Name + "; " + '\n' +
+                "participant_2: " + participant_2_Name + "; " + '\n' +
+                "participant_3: " + participant_3_Name + "; " + '\n' +
+                "participant_4: " + participant_4_Name+ "; " + '\n';
+    }
+
+    /**
+     * метод выводит список тех участников, которые переданы сюда из метода проверки, кто смог пройти дистанцию
+     * @param participant  - передается массив с прошедшими участниками
+     */
+    public void printWinners (Participants[] participant) {
+        int a = 0;
+
+        for (int i = 0; i < participant.length; i++) {
+            if (participant[i] != null) {
+                System.out.println(participant[i].toString());
+                a ++;
+            }
+        }
+
+        if (a == 0) System.out.println("Никто не выжил...");
+    }
+
+}
