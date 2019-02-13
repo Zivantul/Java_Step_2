@@ -1,0 +1,61 @@
+import java.util.Arrays;
+
+public class Course {
+    int [] barriers; // массив с трудозатратами на преодоление препятствий
+
+    public Course(int[] barriers) {
+        this.barriers = barriers;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "barriers=" + Arrays.toString(barriers) +
+                '}';
+    }
+
+    /**
+     * метод проверяет каждого участника команды - прошел он дистанцию или нет
+     * @param team передается команда для прогона каждого участника
+     * @return  возвращает массив из участников, которые справились
+     */
+    public Participants [] dolt (Team team) {
+        Participants[] partWinners = new Participants[4];
+
+        // считаем трудоемкость дистанции
+        int curCoursePower = 0;
+
+        for (int i = 0; i < this.barriers.length; i++) {
+            curCoursePower += this.barriers[i];
+            //System.out.print(this.barriers[i] + "  ");
+
+        }
+        //System.out.println();
+
+        if (team.participant_1_Name.isCourseDone(curCoursePower)) {
+            partWinners[0] = team.participant_1_Name;
+        } else {
+            partWinners[0] = null;
+        }
+
+        if (team.participant_2_Name.isCourseDone(curCoursePower)) {
+            partWinners[1] = team.participant_2_Name;
+        } else {
+            partWinners[1] = null;
+        }
+
+        if (team.participant_1_Name.isCourseDone(curCoursePower)) {
+            partWinners[2] = team.participant_3_Name;
+        } else {
+            partWinners[2] = null;
+        }
+
+        if (team.participant_1_Name.isCourseDone(curCoursePower)) {
+            partWinners[3] = team.participant_4_Name;
+        } else {
+            partWinners[3] = null;
+        }
+
+        return partWinners;
+    }
+}
