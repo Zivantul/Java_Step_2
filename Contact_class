@@ -1,0 +1,37 @@
+import java.util.HashMap;
+import java.util.Map;
+
+public class contact {
+    Map <String, String> cntct = new HashMap <String, String> ();
+
+    public contact(Map<String, String> cntct) {
+        this.cntct = cntct;
+    }
+
+
+    /**
+     * методо добавляет контакт в справочник
+     * @param surname - передаем фамилию
+     * @param phoneNumber - передаем номер телефона
+     */
+    public void add (String surname, String phoneNumber) {
+        this.cntct.put(phoneNumber, surname);
+    }
+
+
+    /**
+     * метод возвращает контакт (Фамилия и все телефоны по данной фамилии) из справочника)
+     * @param searchingSurname - фамилия, которую ищем в справочнике
+     * @return
+     */
+    public String get(String searchingSurname) {
+        String search = searchingSurname + ": ";
+
+        for (Map.Entry<String,String> o : this.cntct.entrySet()) {
+            if (searchingSurname.equalsIgnoreCase(o.getValue())) {
+                search += o.getKey() + "; " ;
+            }
+        }
+        return search;
+    }
+}

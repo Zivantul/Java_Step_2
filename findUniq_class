@@ -1,0 +1,42 @@
+import java.util.*;
+
+public class findUniq {
+    List <String> lst; // = new ArrayList<String>();
+
+    public findUniq(List<String> lst) {
+        this.lst = lst;
+    }
+
+
+    /**
+     * метод переводит передаваемый лист в списко уникальных записей с подсчетом кол-ва вхождений записей
+     * в исходный лист
+     * @return возвращает Map в формате  Запись = кол-во повторов
+     */
+    private Map <String, Integer> getUniq_Map (){
+
+        Map <String, Integer>  curMap = new LinkedHashMap<String, Integer>();
+
+        for (String o : this.lst) {
+            int sum = 0;
+
+            for (String p : this.lst) {
+                if (o.equalsIgnoreCase(p)) {
+                    sum++;
+                }
+            }
+            curMap.put(o,sum);
+        }
+
+        return curMap;
+    }
+
+    /**
+     * метод выводит на экран список уникальных записей с количеством повторов
+     */
+    public void printMap () {
+        for (Map.Entry<String, Integer> o : getUniq_Map().entrySet()) {
+            System.out.println(o.getKey() + ": " + o.getValue());
+        }
+    }
+}
