@@ -36,6 +36,7 @@ public class ChatCreator extends JFrame
             public void actionPerformed(ActionEvent e) {
                 // добавляем фразу в диалоговый List
                 dialog.add(smallField.getText());
+                smallField.setText("");
 
                 // строим таблицу переписки с массивом созданным из диалогового List'a
                 tableDialog = new JTable(getToArray(dialog), arr);
@@ -59,7 +60,8 @@ public class ChatCreator extends JFrame
             public void actionPerformed(ActionEvent e) {
                 // добавляем фразу в диалоговый List
                 dialog.add(smallField.getText());
-
+                smallField.setText("");
+                
                 // строим таблицу переписки с массивом созданным из диалогового List'a
                 tableDialog = new JTable(getToArray(dialog), arr);
 
