@@ -1,0 +1,127 @@
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.*;
+public class ChatCreator extends JFrame
+{
+    // Текстовое поля
+    JTextField smallField;
+    // Таблица для диалога
+    JTable tableDialog;
+    // кнопка
+    JButton btnSend;
+
+    // Переписка
+    List<String> dialog = new ArrayList<String>();
+
+
+    public ChatCreator()
+    {
+        super("FirstDialog");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        // Создание текстового поля
+        smallField = new JTextField(37);
+
+        // Задаем пустое поле для диалога
+        String [] arr = {"", ""};
+        String [][] arrr = {{"", ""}};
+        tableDialog = new JTable(arrr,arr);
+
+        // Слушатель окончания ввода (Enter)
+        smallField.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                // добавляем фразу в диалоговый List
+                dialog.add(smallField.getText());
+
+                // строим таблицу переписки с массивом созданным из диалогового List'a
+                tableDialog = new JTable(getToArray(dialog), arr);
+
+                // Перерисовываем панель
+                JPanel contents = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                contents.add(smallField);
+                contents.add(btnSend);
+                contents.add(new JScrollPane(tableDialog));
+                setContentPane(contents);
+                setVisible(true);
+            }
+        });
+
+
+        // делаем кнопку
+        btnSend = new JButton("Отправить");
+        // добавляем листнер на кнопку
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // добавляем фразу в диалоговый List
+                dialog.add(smallField.getText());
+
+                // строим таблицу переписки с массивом созданным из диалогового List'a
+                tableDialog = new JTable(getToArray(dialog), arr);
+
+                // Перерисовываем панель
+                JPanel contents = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                contents.add(smallField);
+                contents.add(btnSend);
+                contents.add(new JScrollPane(tableDialog));
+                setContentPane(contents);
+                setVisible(true);
+            }
+        });
+
+
+        // Создание панели с текстовым полем, таблицей диалога и кнопкой
+        JPanel contents = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        contents.add(smallField);
+        contents.add(btnSend);
+        contents.add(new JScrollPane(tableDialog));
+
+
+        setContentPane(contents);
+
+        // Определяем размер окна и выводим его на экран
+        setSize(620, 530);
+        setVisible(true);
+    }
+
+
+    /**
+     * метод переводит List диалога в массив
+     * @param curList
+     * @return
+     */
+    public String [][] getToArray (List<String> curList) {
+        // размер листа
+        int intDiagLength = curList.size();
+        // переключатель пользователей (столбцов)
+        int col = 0;
+
+        // инициализируем итоговый массив
+        String [][] curArray = new String[intDiagLength][2];
+
+
+        for (int str = 0; str < intDiagLength; str++) {
+
+            curArray [str][col] = curList.get(str);
+            //System.out.print(curArray [str][col]);
+
+            // переключаем i + второй элемент массива делаем пустым
+            if (col == 0) {
+                col = 1;
+                curArray [str][col] = "";
+                //System.out.print(curArray [str][col]);
+                //System.out.println();
+            } else {
+                col = 0;
+                curArray [str][col] = "";
+                //System.out.print(curArray [str][col]);
+                //System.out.println();
+            }
+        }
+        return curArray;
+    }
+}
