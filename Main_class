@@ -1,0 +1,82 @@
+public class Main {
+    public static final int size = 10000000;
+    public static final int h = size / 2;
+    public static long a;
+    public static float[] a1 = new float[h];
+    public static float[] a2 = new float[h];
+
+
+    public static void main(String[] args) {
+        withotSeparationMethod();
+        withSeparationMethod();
+    }
+
+
+    public static void withotSeparationMethod () {
+        // массив
+        float[] arr = new float[size];
+
+        // заполняем единицами
+        for (int i = 0; i < size; i++) {
+            arr[i] = 1;
+        }
+
+        // производим расчет с замером времени
+        a = System.currentTimeMillis();
+
+        for (int i = 0; i < size; i++) {
+            arr[i] = (float)(arr[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+        }
+
+        // Выводим затраты времени
+        System.out.println("На вариант без разделения понадобилось: " +
+                (System.currentTimeMillis() - a)/1000 + " сек.");
+    }
+
+
+    public static void withSeparationMethod () {
+        // массив
+        float[] arr = new float[size];
+//        float[] a1 = new float[h];
+//        float[] a2 = new float[h];
+
+        // заполняем единицами
+        for (int i = 0; i < size; i++) {
+            arr[i] = 1;
+        }
+
+        // Разбиваем массив на 2 части, засекаем время
+        a = System.currentTimeMillis();
+
+        System.arraycopy(arr, 0, a1, 0, h);
+        System.arraycopy(arr, h, a2, 0, h);
+
+        // инициализируем второй поток и в нем обрабатываем вторую половину массива
+        new SecondThread().start();
+
+        // обрабатываем первую половину массива в главном потоке
+        for (int i = 0; i < h; i++) {
+            a1[i] = (float)(a1[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+        }
+
+        // склеиваем обработанный массив обратно
+        System.arraycopy(a1, 0, arr, 0, h);
+        System.arraycopy(a2, 0, arr, h, h);
+
+        // Выводим затраты времени
+        System.out.println("На вариант с разделением понадобилось: " +
+                (System.currentTimeMillis() - a)/1000 + " сек.");
+    }
+
+    //Второй поток
+    static class SecondThread extends Thread {
+        @Override
+        public void run() {
+            // обрабатываем вторую половину массива во втором потоке
+            for (int i = 0; i < h; i++) {
+                a2[i] = (float) (a2[i] * Math.sin(0.2f + i / 5) * Math.cos(0.2f + i / 5) * Math.cos(0.4f + i / 2));
+            }
+        }
+
+    }
+}
