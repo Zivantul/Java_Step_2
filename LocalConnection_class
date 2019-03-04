@@ -1,0 +1,239 @@
+package Server;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class LocalConnection {
+    String host;
+    int port;
+
+    public LocalConnection(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+
+
+    /**
+     * Make a server connection
+     */
+    public void startServer () {
+        int part = 0;
+        long curTime;
+        long sleepTime; // in mills
+
+        try {
+            ServerSocket ss = new ServerSocket(this.port);
+            Socket client = ss.accept();
+            System.out.println("Connection was successful statemented");
+
+            DataOutputStream dataOutputStream = new DataOutputStream(client.getOutputStream());
+            DataInputStream dataInputStream = new DataInputStream(client.getInputStream());
+
+
+
+            while (!client.isClosed()) {
+                // get a message
+                System.out.println("Server is waiting...");
+                while (true) {
+                    boolean a = getMessageStatus(part, dataInputStream, dataOutputStream);
+                    if (a){
+                        break;
+                    }
+                }
+
+
+                // write and send a message
+                System.out.println("Server is writing:");
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                curTime = System.currentTimeMillis();
+                while (true){
+                    sleepTime = System.currentTimeMillis() - curTime;
+                    if (sleepTime>11000) {break;}
+
+                    String msg = br.readLine();
+
+                    // check on quit
+                    if (msg.equalsIgnoreCase("quit")) {
+                        stopServer(part, dataInputStream, dataOutputStream);
+                        break;
+                    }
+                    sendMessage(part, dataOutputStream, msg);
+                }
+                try {
+                    sendMessage(part, dataOutputStream, "/end");
+                } catch (Exception e) {
+                    System.out.println("Connection closed!");
+                }
+            }
+
+            client.close();
+        } catch (Exception e) {
+            System.out.println("Couldn't create a server");
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    /**
+     * Make a client connection
+     */
+    public void startClient () {
+        int part = 1;
+        long sleepTime; // in mills
+        long curTime;
+
+        try {
+            Socket cs = new Socket(this.host, this.port);
+            System.out.println("Client connected successfully");
+
+            DataOutputStream dataOutputStream = new DataOutputStream(cs.getOutputStream());
+            DataInputStream dataInputStream = new DataInputStream(cs.getInputStream());
+
+            while (!cs.isOutputShutdown()) {
+                // write and send a message
+                System.out.println("Client is writing:");
+
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                curTime = System.currentTimeMillis();
+                while (true){
+                    sleepTime = System.currentTimeMillis() - curTime;
+                    if (sleepTime>11000) {break;}
+
+                    String msg = br.readLine();
+
+                    // check on quit
+                    if (msg.equalsIgnoreCase("quit")) {
+                        stopServer(part, dataInputStream, dataOutputStream);
+                        break;
+                    }
+                    sendMessage(part, dataOutputStream, msg);
+                }
+                try {
+                    sendMessage(part, dataOutputStream, "/end");
+                } catch (Exception e) {
+                    System.out.println("Connection closed!");
+                }
+
+                // get a message
+                System.out.println("Client is waiting...");
+                while (true) {
+                    boolean a = getMessageStatus(part, dataInputStream, dataOutputStream);
+                    if (a){
+                        break;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("Couldn't create a client's connection");
+        }
+    }
+
+    public void sendMessage (int part, DataOutputStream dataOutputStream, String msg) {
+        String participant;
+        if (part == 0) {
+            participant = "Server";
+        } else {
+            participant = "Client";
+        }
+
+        try {
+            if (msg.equalsIgnoreCase("quit")) {
+
+            } else if (msg.equalsIgnoreCase("/end")) {
+                dataOutputStream.writeUTF(msg);
+                dataOutputStream.flush();
+            } else {
+                dataOutputStream.writeUTF(msg);
+                dataOutputStream.flush();
+                System.out.println(participant + " sent a message: " + msg);
+            }
+
+        } catch (Exception e) {
+            System.out.println(participant + " couldn't send a message");
+            e.printStackTrace();
+        }
+    }
+
+    public void getMessage (int part, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        String participant;
+        if (part == 0) {
+            participant = "Client";
+        } else {
+            participant = "Server";
+        }
+
+        try {
+            String msg = dataInputStream.readUTF();
+            // check on quit
+            if (msg.equalsIgnoreCase("quit")) {
+                stopServer(part, dataInputStream, dataOutputStream);
+            } else if (msg.equalsIgnoreCase("/end")) {
+
+            } else {
+                System.out.println("Read info from " + participant + ": " + msg);
+            }
+
+        } catch (Exception e) {
+            System.out.println(participant + " couldn't get a message");
+            e.printStackTrace();
+        }
+    }
+
+    public boolean getMessageStatus (int part, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        String participant;
+        boolean isEnd = false;
+
+        if (part == 0) {
+            participant = "Client";
+        } else {
+            participant = "Server";
+        }
+
+        try {
+            String msg = dataInputStream.readUTF();
+            // check on quit
+            if (msg.equalsIgnoreCase("quit")) {
+                stopServer(part, dataInputStream, dataOutputStream);
+            } else if (msg.equalsIgnoreCase("/end")) {
+                isEnd = true;
+            } else {
+                System.out.println("Read info from " + participant + ": " + msg);
+            }
+
+        } catch (Exception e) {
+            System.out.println(participant + " couldn't get a message");
+            e.printStackTrace();
+        }
+        return isEnd;
+    }
+
+    public void stopServer (int part, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
+        String participant;
+        if (part == 0) {
+            participant = "Server";
+        } else {
+            participant = "Client";
+        }
+
+        try {
+            dataOutputStream.writeUTF("Connection closed by " + participant);
+            dataOutputStream.flush();
+
+            dataInputStream.close();
+            dataOutputStream.close();
+
+        } catch (Exception e) {
+            System.out.println("Couldn't close connection... something wrong");
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,0 +1,12 @@
+package Client;
+
+import Server.LocalConnection;
+
+
+public class Client_4 {
+  public static void main(String[] args) {
+    LocalConnection lc = new LocalConnection("localhost", 3345);
+    lc.startClient();
+
+  }
+}
