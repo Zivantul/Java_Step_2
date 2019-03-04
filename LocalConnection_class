@@ -50,7 +50,6 @@ public class LocalConnection {
                 // write and send a message
                 System.out.println("Server is writing:");
 
-                //////
                 BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
                 curTime = System.currentTimeMillis();
                 while (true){
@@ -71,18 +70,6 @@ public class LocalConnection {
                 } catch (Exception e) {
                     System.out.println("Connection closed!");
                 }
-                /////
-
-//                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//                String msg = br.readLine();
-//                // check on quit from client
-//                if (msg.equalsIgnoreCase("quit")) {
-//                    stopServer(part, dataInputStream, dataOutputStream);
-//                    client.close();
-//                    break;
-//                }
-//
-//                sendMessage(part, dataOutputStream, msg);
             }
 
             client.close();
@@ -93,8 +80,6 @@ public class LocalConnection {
 
 
     }
-
-
 
 
     /**
@@ -139,14 +124,12 @@ public class LocalConnection {
 
                 // get a message
                 System.out.println("Client is waiting...");
-                ////
                 while (true) {
                     boolean a = getMessageStatus(part, dataInputStream, dataOutputStream);
                     if (a){
                         break;
                     }
                 }
-                ////
             }
 
         } catch (Exception e) {
