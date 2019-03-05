@@ -1,0 +1,115 @@
+package server;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ * @author ilnaz-92@yandex.ru
+ * Created on 2019-03-04
+ */
+public class Server
+{
+  private List<ClientHandler> clientHandlers = new ArrayList<>();
+
+  public Server()
+  {
+    ServerSocket serverSocket = null;
+    Socket clientSocket = null;
+    try
+    {
+      serverSocket = new ServerSocket(9999);
+      System.out.println("Server launched");
+
+      while (true)
+      {
+        clientSocket = serverSocket.accept();
+        // get client's nickname
+        DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
+        String nickNameOfClient = dataInputStream.readUTF();
+
+        ClientHandler client = new ClientHandler(clientSocket, this, nickNameOfClient);
+        clientHandlers.add(client);
+        new Thread(client).start();
+      }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    finally
+    {
+      try
+      {
+        serverSocket.close();
+        clientSocket.close();
+        System.out.println("Server finished");
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
+
+
+  }
+
+  public void notificationAllClientWithNewMessage(String msg)
+  {
+    for (ClientHandler clientHandler : clientHandlers)
+    {
+      clientHandler.sendMessage(msg);
+    }
+
+  }
+
+  /**
+   * send a message to one client, whose NickName is in the message
+   * @param msg client;s message
+   */
+  public void sendNewMessageToOneClient(String msg)
+  {
+    String nickName = getNickName(msg);
+
+    for (ClientHandler clientHandler : clientHandlers)
+    {
+      if (clientHandler.getNickName().equals(nickName)) {
+        clientHandler.sendMessage(msg);
+      }
+
+    }
+
+  }
+
+  /**
+   * method extract nickName from the message
+   * @param msg - the message (with the NickName inside it)
+   * @return
+   */
+  private String getNickName (String msg) {
+    String nickName = "";
+
+    try {
+      int startNickIndex = msg.lastIndexOf("/w ") + 3;
+      int finishNickIndex = startNickIndex + msg.substring(startNickIndex).lastIndexOf(" ");
+
+      nickName = msg.substring(startNickIndex, finishNickIndex);
+    } catch (Exception e) {
+      System.out.println("Couldn't find NickName in the message! Check the message's mask");
+    }
+
+    return nickName;
+  }
+
+  public void removeClient(ClientHandler clientHandler)
+  {
+    clientHandlers.remove(clientHandler);
+  }
+
+
+}
